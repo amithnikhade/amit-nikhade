@@ -1,0 +1,219 @@
+
+from tkinter import Tk, StringVar, IntVar, Label, Entry, Button, Canvas, PhotoImage, Menu
+import sqlite3
+from PIL import Image, ImageTk, ImageEnhance
+from tkinter import messagebox
+from socket import AF_INET, socket, SOCK_STREAM
+from threading import Thread
+from tkinter import *
+
+
+top = Tk()
+top.title("amit's messenger")
+
+User=StringVar()
+
+Passw=IntVar()
+
+
+Username=StringVar()
+Password=IntVar()
+
+
+Email=StringVar()
+
+
+
+def new_window():
+    root=Tk()
+    root.geometry('500x500')
+    root.title("Registration")
+
+   
+    label_1 = Label(root, text="username",width=20,font=("bold", 12))
+    label_1.place(x=80,y=150)
+
+    entry_1 = Entry(root,textvar=Username)
+    entry_1.place(x=240,y=150)
+
+    label_2 = Label(root, text="password",width=20,font=("bold", 12))
+    label_2.place(x=80,y=200)
+
+    entry_2 = Entry(root,textvar=Password)
+    entry_2.place(x=240,y=200)
+
+    label_3 = Label(root, text="email",width=20,font=("bold", 12))
+    label_3.place(x=80,y=250)
+
+    entry_2 = Entry(root,textvar=Email)
+    entry_2.place(x=240,y=255)
+
+    Button(root, text='Submit',width=20,bg='#1C86EE',fg='white',command=database1,border="0").place(x=180,y=350)
+   
+    label_1 = Label(root, text="SignUp",width=20,font=("bold", 20),fg="white", bg="#00C957")
+    label_1.place(x=97,y=400)
+
+
+
+def database1():
+
+    Username1=Username.get()
+    Password1=Password.get()
+     
+    conn = sqlite3.connect('def.db')
+    cursor=conn.cursor()
+
+    cursor.execute("SELECT * FROM Student WHERE Username ='%s'"%(Username1))
+    l=cursor.fetchone()
+    print(l)
+    l==None
+    if l:
+        cursor.execute('CREATE TABLE IF NOT EXISTS Student (Username VARCHAR NOT NULL,Password  NOT NULL)')
+        cursor.execute('insert into Student (Username,Password) VALUES(?,?)',(Username1,Password1,))
+#       cursor.close()
+        conn.commit()
+        conn.close()
+    else:
+        messagebox.showinfo("amit's app", "User with this Username already exist, Try something else")
+        
+
+
+def database():
+   User1=User.get()
+   Passw1=Passw.get()
+   
+   conn = sqlite3.connect('pon.db')
+   with conn:
+      cursor=conn.cursor()
+
+   cursor.execute("SELECT * FROM Student WHERE Username ='%s'"%(User1))
+  
+   q=cursor.fetchone()
+   print(q)
+   
+   cursor.execute("SELECT * FROM Student WHERE Password='%s'"%(Passw1))
+
+   j=cursor.fetchone()
+   print(j)
+
+   j==None
+   q==None
+   if q and j:
+
+       print("crafted by: Amit nikhade")
+
+       def receive():
+           """Handles receiving of messages."""
+           while True:
+               try:
+                   msg = client_socket.recv(BUFSIZ).decode("utf8")
+                   msg_list.insert(END, msg)
+                   msg_list.see(END)
+               except OSError:
+                   break
+
+
+       def send(event=None):
+           msg = my_msg.get()
+           my_msg.set("")  # Clears input field.
+           client_socket.send(bytes(msg, "utf8"))
+           if msg == "{quit}":
+               client_socket.close()
+               top.quit()
+
+
+       def on_closing(event=None):
+           """This function is to be called when the window is closed."""
+           my_msg.set("{quit}")
+           send()
+
+       top = Tk()
+       top.title("Amit's messenger")
+
+       messages_frame = Frame(top)
+       my_msg = StringVar()  # For the messages to be sent.
+       my_msg.set("")
+       scrollbar = Scrollbar(messages_frame)  # To see through previous messages.
+       # this will contain the messages.
+       msg_list = Listbox(messages_frame, height=30, width=100, yscrollcommand=scrollbar.set)
+       scrollbar.pack(side=RIGHT, fill=Y)
+       msg_list.pack(side=LEFT, fill=BOTH)
+       msg_list.pack()
+       messages_frame.pack()
+
+ 
+
+
+       entry_field = Entry(top, textvariable=my_msg)
+       entry_field.bind("<Return>", send)
+       entry_field.pack()
+       send_button = Button(top, text="Send", command=send )
+       send_button.pack()
+
+       top.protocol("WM_DELETE_WINDOW", on_closing)
+
+       #Socket part
+       HOST = 'localhost'  # Enter host of the server without inverted commas 
+       PORT = 33000
+       BUFSIZ = 1024
+       ADDR = (HOST, PORT)
+
+       client_socket = socket(AF_INET, SOCK_STREAM)
+       client_socket.connect(ADDR)
+
+       receive_thread = Thread(target=receive)
+       receive_thread.start()
+       top.mainloop()  
+   else:
+        messagebox.showinfo("amit's app", "you are not a registered user, so please signup.")
+
+
+
+C = Canvas(top, bg="white", height=5500, width=8000)
+filename = PhotoImage(file = "E:\p.png")
+filename=filename.subsample(6,4)
+
+filename2 = PhotoImage(file= "E:\yt.png")
+
+
+
+    
+filemenu = Menu(top,bg='blue')
+filemenu.add_command(label="Quit")
+top.config( background='red',menu=filemenu)
+submenu= Menu(filemenu)
+filemenu.add_cascade(label="file", menu=submenu)
+
+background_label = Label(top, image=filename)
+background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+Entry2=Entry(top, textvar=Passw)
+Entry2.place(x=530, y=500,relheight=0.02,relwidth=0.2 )
+Entry2.config(font='bold'*5)
+
+
+E1 = Entry(top, textvar=User)
+E1.place(x=530, y=450,relheight=0.02,relwidth=0.2 )
+E1.config(font='bold'*5)
+
+
+button1=Button(top, text= "Login", background="#1C86EE", fg="white",command=database)
+button1.place(x=530, y=550,relheight=0.04,relwidth=0.2)
+button1.config(state="normal", relief="raised", borderwidth=0)
+
+label1= Label(top, text="Crafted By : Amit Nikhade", fg="grey", bg="black")
+label1.place(x=593, y=605)
+
+label2= Label(top, text="Password:", fg="grey", bg="White")
+label2.place(x=400, y=500,relheight=0.02,relwidth=0.1)
+
+label3= Label(top, text="Username:", fg="grey", bg="White")
+label3.place(x=400, y=450,relheight=0.02,relwidth=0.1)
+
+
+button1=Button(top, text= "SignUp", bg="#1C86EE", fg= 'white', command=new_window)
+button1.place(x=593, y=700,relheight=0.03,relwidth=0.1)
+button1.config(state="normal", relief="raised", borderwidth=0)
+
+C.pack()
+top.mainloop()
