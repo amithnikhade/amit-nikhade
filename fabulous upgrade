@@ -1,0 +1,264 @@
+from tkinter import Tk, StringVar, IntVar, Label, Entry, Button, Canvas, PhotoImage, Menu
+import sqlite3
+from PIL import Image, ImageTk, ImageEnhance
+from tkinter import messagebox
+from socket import AF_INET, socket, SOCK_STREAM
+from threading import Thread
+from tkinter import *
+import wx
+
+top = Tk()
+top.title("amit's messenger")
+
+
+
+
+username2=StringVar()
+password2=StringVar()
+email2=StringVar()
+USERNAME=StringVar()
+PASSWORD=StringVar()
+EMAIL=StringVar()
+
+
+
+def new_window():
+    class window(wx.Frame):
+        def __init__(self,parent=None,id=1,name='frame',size=(500,400)):
+
+
+
+            wx.Frame.__init__(self,parent,id,name, size=(500,400))
+            self.panel=wx.Panel(self)
+
+            self.image=wx.StaticBitmap(self.panel, 1, wx.Bitmap('D:\icon.png',wx.BITMAP_TYPE_ANY),
+            pos=wx.Point(400, 100), size=(200, 200))
+        
+            self.Entry1=wx.TextCtrl(self.panel,3,pos=(100,80),size=(200,30))
+            # Entry1.SetValue('Username')
+            # username2= Entry1.GetValue()
+           
+
+            self.Entry2=wx.TextCtrl(self.panel,4,pos=(100,120),size=(200,30))
+            # Entry2.SetValue('password')
+            # password2= Entry2.GetValue()
+
+
+            self.Entry3=wx.TextCtrl(self.panel,5,pos=(100,160),size=(200,30))
+            # Entry3.SetValue('Email')
+            # email2= Entry3.GetValue()
+
+
+
+            # labela=wx.StaticText(panel,3,pos=(40,80))
+            # labela.SetLabel('Username')
+
+            # labelb=wx.StaticText(panel,3,pos=(40,120))
+            # labelb.SetLabel('Username')
+
+            # labelc=wx.StaticText(panel,3,pos=(40,160))
+            # labelc.SetLabel('Username')
+
+
+
+            self.button=wx.Button(self.panel,1,"ima",pos=(155,250),size=(90,30))
+            self.Bind(wx.EVT_BUTTON,self.database,self.button)
+
+        
+ 
+
+        def database(self,event):
+            
+            self.username=self.Entry1.GetValue()
+            self.password=self.Entry2.GetValue()
+            self.email=self.Entry3.GetValue()
+            self.con = sqlite3.connect("ko.db")
+            with self.con:
+                self.cur = self.con.cursor()
+        
+            self.cur.execute("CREATE TABLE IF NOT EXISTS users(username2 TEXT ,password2 TEXT ,email2 TEXT )")
+            # cur.execute("INSERT INTO users (username,password) VALUES (?,?)", (username,password))
+            self.cur.execute("INSERT INTO users(username2, password2, email2) VALUES(?,?,?)",(self.username, self.password, self.email))
+            self.con.commit()
+            self.con.close()
+        
+        
+
+    app=wx.App()
+
+    frame=window()
+
+    frame.Show()
+
+    app.MainLoop()
+
+    
+    
+
+
+
+
+
+
+
+
+
+def database1():
+   User1=USERNAME.get()
+   Passw1=PASSWORD.get()
+
+   
+
+   if USERNAME.get()==""or PASSWORD.get()=="":
+       messagebox.showinfo("amit's app", "Don't leava the field empty.")
+
+       
+   else:
+
+       conn = sqlite3.connect('kb.db')
+       with conn:
+           cursor=conn.cursor()
+
+       cursor.execute("SELECT * FROM users WHERE username2 ='%s'"%(User1))
+  
+       q=cursor.fetchone()
+       print(q)
+   
+       cursor.execute("SELECT * FROM Users WHERE password2='%s'"%(Passw1))
+
+       j=cursor.fetchone()
+       print(j)
+
+       j==None 
+       q==None 
+   
+
+       
+       
+
+   if q and j:
+       
+       print("crafted by: Amit nikhade")
+
+       def receive():
+           """Handles receiving of messages."""
+           while True:
+
+               try:
+
+                   msg = client_socket.recv(BUFSIZ).decode("utf8")
+                   msg_list.insert(END, msg)
+                   msg_list.see(END)
+               except OSError:
+
+                   break
+
+
+       def send(event=None):
+           msg = my_msg.get()
+           my_msg.set("")  # Clears input field.
+           client_socket.send(bytes(msg, "utf8"))
+           if msg == "{quit}":
+               client_socket.close()
+               top.quit()
+
+
+       def on_closing(event=None):
+           """This function is to be called when the window is closed."""
+           my_msg.set("{quit}")
+           send()
+
+       top = Tk()
+       top.title("Amit's messenger")
+
+       messages_frame = Frame(top)
+       my_msg = StringVar()  # For the messages to be sent.
+       my_msg.set("")
+       scrollbar = Scrollbar(messages_frame)  # To see through previous messages.
+       # this will contain the messages.
+       msg_list = Listbox(messages_frame, height=30, width=100, yscrollcommand=scrollbar.set)
+       scrollbar.pack(side=RIGHT, fill=Y)
+       msg_list.pack(side=LEFT, fill=BOTH)
+       msg_list.pack()
+       messages_frame.pack()
+
+ 
+
+
+       entry_field = Entry(top, textvariable=my_msg)
+       entry_field.bind("<Return>", send)
+       entry_field.pack()
+       send_button = Button(top, text="Send", command=send )
+       send_button.pack()
+
+       top.protocol("WM_DELETE_WINDOW", on_closing)
+
+       #Socket part
+       HOST = 'localhost'  # Enter host of the server without inverted commas 
+       PORT = 33000
+       BUFSIZ = 1024
+       ADDR = (HOST, PORT)
+
+       client_socket = socket(AF_INET, SOCK_STREAM)
+       client_socket.connect(ADDR)
+
+       receive_thread = Thread(target=receive)
+       receive_thread.start()
+       top.mainloop()   
+
+       
+       
+       
+   else:
+       messagebox.showinfo("amit's app", "you are not a registered user, so please signup.")
+       
+       
+
+C = Canvas(top, bg="white", height=5500, width=8000)
+filename = PhotoImage(file = "E:\p.png")
+filename=filename.subsample(6,4)
+
+filename2 = PhotoImage(file= "E:\p.png")
+
+
+
+    
+filemenu = Menu(top,bg='blue')
+filemenu.add_command(label="Quit")
+top.config( background='red',menu=filemenu)
+submenu= Menu(filemenu)
+filemenu.add_cascade(label="file", menu=submenu)
+
+background_label = Label(top, image=filename)
+background_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+Entry2=Entry(top, textvar=PASSWORD)
+Entry2.place(x=530, y=500,relheight=0.02,relwidth=0.2 )
+Entry2.config(font='bold'*5)
+
+
+E1 = Entry(top, textvar=USERNAME)
+E1.place(x=530, y=450,relheight=0.02,relwidth=0.2 )
+E1.config(font='bold'*5)
+
+
+button1=Button(top, text= "Login", background="#1C86EE", fg="white",command=database1)
+button1.place(x=530, y=550,relheight=0.04,relwidth=0.2)
+button1.config(state="normal", relief="raised", borderwidth=0)
+
+label1= Label(top, text="Crafted By : Amit Nikhade", fg="grey", bg="black")
+label1.place(x=593, y=605)
+
+label2= Label(top, text="Password:", fg="grey", bg="White")
+label2.place(x=400, y=500,relheight=0.02,relwidth=0.1)
+
+label3= Label(top, text="Username:", fg="grey", bg="White")
+label3.place(x=400, y=450,relheight=0.02,relwidth=0.1)
+
+
+button1=Button(top, text= "SignUp", bg="#1C86EE", fg= 'white', command=new_window)
+button1.place(x=593, y=700,relheight=0.03,relwidth=0.1)
+button1.config(state="normal", relief="raised", borderwidth=0)
+
+C.pack()
+top.mainloop()
